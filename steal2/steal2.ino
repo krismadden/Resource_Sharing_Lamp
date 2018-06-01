@@ -76,7 +76,7 @@ void setup() {
 
 
   adafruitFeed2->onMessage(handleMessage_units);
-  adafruitFeed2->onMessage(handleMessage_bing);
+  adafruitFeed3->onMessage(handleMessage_bing);
   adafruitFeed4->onMessage(handleMessage_startup);
 
   adafruitFeed4->save(feed4Data);
