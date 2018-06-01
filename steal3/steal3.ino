@@ -27,7 +27,7 @@ bool downButtonDown = false;
 
 int feed1Data;
 int feed2Data;
-int yourLight;
+int otherLight;
 bool feed3Data = false;
 bool feed4Data = true;
 int totalUnits;
@@ -96,11 +96,12 @@ void loop() {
   io.run();
   
   brightness = feed1Data;
-  turnOn(brightness);
+  turnOn(feed1Data);
   
 
-  totalUnits = brightness + feed2Data;
+  totalUnits = feed1Data + feed2Data;
 
+//if this feed recieved a 1 from adafruit it will flicker the lights and trigger the solenoid
   if (feed3Data) {
     if (brightness > 0) {
       digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
@@ -111,82 +112,77 @@ void loop() {
       delay(50);                      //Wait 1 Second
       digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
 
-          for (int i = 0; i < maxBrightness; i++) {
-            for (int x = 0; x < 6; x++) {
-              strip.setPixelColor(i * 6 + x, strip.Color(255, 0, 0) );
-            }
-          }
-          strip.show();
-          delay(50);
-          turnOn(brightness);
-          delay(50);
-          for (int i = 0; i < maxBrightness; i++) {
-            for (int x = 0; x < 6; x++) {
-              strip.setPixelColor(i * 6 + x, strip.Color(255, 0, 0) );
-            }
-          }
-          strip.show();
-          delay(100);
-          turnOn(brightness);
+      for (int i = 0; i < maxBrightness; i++) {
+        for (int x = 0; x < 6; x++) {
+          strip.setPixelColor(i * 6 + x, strip.Color(255, 0, 0) );
+        }
+      }
+      strip.show();
+      delay(50);
+      turnOn(brightness);
+      delay(50);
+      for (int i = 0; i < maxBrightness; i++) {
+        for (int x = 0; x < 6; x++) {
+          strip.setPixelColor(i * 6 + x, strip.Color(255, 0, 0) );
+        }
+      }
+      strip.show();
+      delay(100);
+      turnOn(brightness);
 
       feed3Data = false;
     }
 
   }
 
+//this sends the brightness of this lamp to adafruit when the other lamp is turned on.
   if (feed4Data) {
     adafruitFeed1->save(brightness);
     feed4Data = false;
   }
 
-  if (digitalRead(BRIGHTNESS_UP) == LOW && totalUnits < maxBrightness && upButtonDown == false) {
-    brightness = brightness + interval;
-    //      Serial.print("going up to -> ");
-    //      Serial.println(brightness); //for debugging purposes
-    newValue = brightness;
+//when the + button is pressed and it was previouslly released
+  if (digitalRead(BRIGHTNESS_UP) == LOW && upButtonDown == false) {
+    
+    //when the total number of units in use is 10 and this lamp's brightness is less than 10
+    if(totalUnits >= maxBrightness && brightness < 10){
+      //take brightness from the other lamp
+      otherLight = feed2Data;
+      otherLight = otherLight - interval;
+      delay(80);
+      adafruitFeed2->save(otherLight);
+      
+      //turn this lamps' brightness up
+      brightness = brightness + interval;
+      delay(80);
+      adafruitFeed1->save(brightness)
+    }
+    else if(brightness < 10){
+      brightness = brightness + interval;
+      delay(80);
+      adafruitFeed1->save(brightness)
+    }
+    //this waits for the button to be released before the button press can be registered again
     upButtonDown = true;
   }
 
+
   if (digitalRead(BRIGHTNESS_DOWN) == LOW && brightness > 0 && downButtonDown == false) {
     brightness = brightness - interval;
-    //      Serial.print("going down to -> ");
-    //      Serial.println(brightness); //for debugging purposes
-    newValue = brightness;
+    delay(80);
+    adafruitFeed1->save(brightness)
     downButtonDown = true;
   }
 
 
-  //  sends a true to adafruit when brightness is full
-  int bUp = digitalRead(BRIGHTNESS_UP) == HIGH ? LOW : HIGH;
-  if (bUp  == HIGH && totalUnits >= maxBrightness && upButtonDown == false) {
-
-   
-/************************ Here is the new stuff *******************************/
-
-    
-    //youlight = yourlight - 1
-    yourLight = feed2Data;
-    yourLight = yourLight - interval;
-
-    //mylight =mylight + 1
-    brightness = brightness + interval;
-    newValue = brightness;
+  //  sends a true to adafruit when brightness is full to trigger the solenoid and the flash of the lights
+  if (digitalRead(BRIGHTNESS_UP) == LOW && totalUnits >= maxBrightness && upButtonDown == false) {
 
     //set lights
     adafruitFeed3->save(1);
 
     upButtonDown = true;
 
-  }
-  delay(80);
-
-  // only push to adafruit when the value changes
-  if (lastValue != newValue) {
-    lastValue = newValue;
-    adafruitFeed1->save(brightness);
-    adafruitFeed2->save(yourLight); // this shouldn't cause issues being here..... but we will see........
-    //        Serial.print("sending -> ");
-    //        Serial.println(brightness); //for debugging purposes
   }
 
 
