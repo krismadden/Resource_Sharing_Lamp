@@ -25,6 +25,7 @@ int newValue = 10;
 bool upButtonDown = false;
 bool downButtonDown = false;
 
+int feed1Data = 0;
 int feed2Data;
 int yourLight;
 bool feed3Data = false;
@@ -54,32 +55,34 @@ void setup() {
 
 
 
-
+Serial.print(io.status());
   Serial.begin(115200);
-
+Serial.print(io.status());
   // wait for serial monitor to open
   while (! Serial);
-
+Serial.print(io.status());
   // connect to io.adafruit.com
   Serial.print("Connecting to Adafruit IO");
   io.connect();
-
+Serial.print(io.status());
   // wait for a connection
   while (io.status() < AIO_CONNECTED) {
+    Serial.print(io.status());
     Serial.print(".");
     delay(500);
   }
-
+Serial.print(io.status());
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
 
-
+  adafruitFeed1->onMessage(handleMessage_MYunits);
   adafruitFeed2->onMessage(handleMessage_units);
   adafruitFeed3->onMessage(handleMessage_bing);
   adafruitFeed4->onMessage(handleMessage_startup);
 
   adafruitFeed4->save(feed4Data);
+  adafruitFeed1->save(0);
   // initialize the LED strip pin as an output:
   pinMode(LED_STRIP_PIN, OUTPUT);
   pinMode(SOLENOID_PIN, OUTPUT);
@@ -92,8 +95,10 @@ void setup() {
 
 void loop() {
   io.run();
-
+  
+  brightness = feed1Data;
   turnOn(brightness);
+  
 
   totalUnits = brightness + feed2Data;
 
@@ -221,6 +226,13 @@ void turnOn(int lights) {
   strip.show();
 }
 
+void handleMessage_MYunits(AdafruitIO_Data *data) {
+
+  // print RGB values and hex value
+  String feed1Data_char = data->value();
+  feed1Data = feed1Data_char.toInt();
+
+}
 
 void handleMessage_units(AdafruitIO_Data *data) {
 
