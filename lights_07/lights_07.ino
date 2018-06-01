@@ -99,6 +99,7 @@ void loop(){
 
     if(digitalRead(BRIGHTNESS_UP) == LOW && upButtonDown == false){
       iSteal = true;
+      upButtonDown == true;
     }
 
     
