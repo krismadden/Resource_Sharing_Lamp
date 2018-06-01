@@ -14,6 +14,7 @@
 
 const int maxBrightness = 10; //this can be any number - it's the number of steps between dimmest and brightest. 
 const int interval = 1;
+const boolean paris = true;
 
 // variables will change:
 int brightness = 0;
@@ -28,8 +29,6 @@ int feed2Data;
 bool feed3Data = false;
 bool feed4Data = true;
 int totalUnits;
-
-bool iSteal = false;
 
 /****** uncomment this is your are lausanne. comment this out if you are in paris.*******/
 //AdafruitIO_Feed *adafruitFeed1 = io.feed("ecalLausanne"); //this is your lamp location ("parsonsParis" or "ecalLausanne")
@@ -96,21 +95,9 @@ void loop(){
     turnOn(brightness);
 
     totalUnits = brightness + feed2Data;
-
-    if(digitalRead(BRIGHTNESS_UP) == LOW){
-      iSteal = true;
-    }
-
-    
     if(feed3Data){
-      if (iSteal == false && brightness > 0){
-        brightness = brightness - 1;
-      }
-      else if(iSteal == true && totalUnits < maxBrightness){
-         brightness = brightness + 1;
-      }
-      if(brightness > 0 && totalUnits < maxBrightness{
-        digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
+      if(brightness > 0 || paris){
+      digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
         delay(50);                      //Wait 1 Second
         digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
         delay(50);                      //Wait 1 Second
@@ -118,6 +105,16 @@ void loop(){
         delay(50);                      //Wait 1 Second
         digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
 
+        if(feed3Data){
+      if(brightness > 0 || paris){
+//      digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
+//        delay(50);                      //Wait 1 Second
+//        digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
+//        delay(50);                      //Wait 1 Second
+//        digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
+//        delay(50);                      //Wait 1 Second
+//        digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
+        
         for(int i=0; i<maxBrightness; i++) {
           for(int x=0; x<6; x++){
             strip.setPixelColor(i*6 + x, strip.Color(255,0,0) );
@@ -138,9 +135,13 @@ void loop(){
 
        feed3Data = false;
       }
-      iSteal = false;
+       
     }
-    
+       feed3Data = false;
+      }
+       
+    }
+
     if(feed4Data){
       adafruitFeed1->save(brightness);
       feed4Data = false;
