@@ -280,7 +280,7 @@ void handleMessage_bing5(AdafruitIO_Data *data) {
   Serial.println("Received : ");
   Serial.println(data->value());
   String feed5Data_char = data->value();
-  feed5Data = feed3Data_char.toInt();
+  feed5Data = feed5Data_char.toInt();
 
 }
 
