@@ -79,8 +79,9 @@ void setup() {
   adafruitFeed2->onMessage(handleMessage_units);
   adafruitFeed3->onMessage(handleMessage_bing);
   adafruitFeed4->onMessage(handleMessage_startup);
-
-  adafruitFeed4->save(feed4Data);
+  
+//commented out setup
+//  adafruitFeed4->save(feed4Data);
   adafruitFeed1->save(0);
   // initialize the LED strip pin as an output:
   pinMode(LED_STRIP_PIN, OUTPUT);
@@ -136,10 +137,11 @@ void loop() {
   }
 
 //this sends the brightness of this lamp to adafruit when the other lamp is turned on.
-  if (feed4Data) {
-    adafruitFeed1->save(brightness);
-    feed4Data = false;
-  }
+//commented out setup
+//  if (feed4Data) {
+//    adafruitFeed1->save(brightness);
+//    feed4Data = false;
+//  }
 
 //when the + button is pressed and it was previouslly released
   if (digitalRead(BRIGHTNESS_UP) == LOW && upButtonDown == false) {
