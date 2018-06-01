@@ -143,6 +143,7 @@ void loop() {
 //    feed4Data = false;
 //  }
 
+
 //when the + button is pressed and it was previouslly released
   if (digitalRead(BRIGHTNESS_UP) == LOW && upButtonDown == false) {
     
@@ -162,7 +163,7 @@ void loop() {
     else if(brightness < 10){
       brightness = brightness + interval;
       delay(80);
-      adafruitFeed1->save(brightness)
+      adafruitFeed1->save(brightness);
     }
     //this waits for the button to be released before the button press can be registered again
     upButtonDown = true;
