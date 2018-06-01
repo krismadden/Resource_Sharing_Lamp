@@ -158,7 +158,7 @@ void loop() {
       //turn this lamps' brightness up
       brightness = brightness + interval;
       delay(80);
-      adafruitFeed1->save(brightness)
+      adafruitFeed1->save(brightness);
     }
     else if(brightness < 10){
       brightness = brightness + interval;
@@ -173,7 +173,7 @@ void loop() {
   if (digitalRead(BRIGHTNESS_DOWN) == LOW && brightness > 0 && downButtonDown == false) {
     brightness = brightness - interval;
     delay(80);
-    adafruitFeed1->save(brightness)
+    adafruitFeed1->save(brightness);
     downButtonDown = true;
   }
 
