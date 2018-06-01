@@ -104,10 +104,12 @@ void loop(){
     
     if(feed3Data){
       if (iSteal == false && brightness > 0){
-        brightness = brightness - 1;
+        brightness = brightness - interval;
+        newValue = brightness;
       }
       else if(iSteal == true && totalUnits < maxBrightness){
-         brightness = brightness + 1;
+         brightness = brightness + interval;
+         newValue = brightness;
       }
       if(brightness > 0 && totalUnits < maxBrightness{
         digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
