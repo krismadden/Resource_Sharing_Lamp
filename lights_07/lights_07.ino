@@ -107,7 +107,7 @@ void loop(){
         brightness = brightness - interval;
         newValue = brightness;
       }
-      else if(iSteal == true && totalUnits < maxBrightness){
+      if(iSteal == true && totalUnits < maxBrightness){
          brightness = brightness + interval;
          newValue = brightness;
       }
