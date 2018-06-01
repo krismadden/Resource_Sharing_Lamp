@@ -98,7 +98,7 @@ void loop() {
   totalUnits = brightness + feed2Data;
 
   if (feed3Data) {
-    if (brightness > 0 || paris) {
+    if (brightness > 0) {
       digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
       delay(50);                      //Wait 1 Second
       digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
