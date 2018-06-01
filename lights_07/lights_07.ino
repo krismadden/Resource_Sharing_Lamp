@@ -97,7 +97,7 @@ void loop(){
 
     totalUnits = brightness + feed2Data;
 
-    if(digitalRead(BRIGHTNESS_UP) == LOW){
+    if(digitalRead(BRIGHTNESS_UP) == LOW && upButtonDown == false){
       iSteal = true;
     }
 
@@ -188,7 +188,7 @@ void loop(){
     if (digitalRead(BRIGHTNESS_DOWN) == HIGH){
       downButtonDown = false;
     }
-    if (digitalRead(BRIGHTNESS_UP) == LOW){
+    if (digitalRead(BRIGHTNESS_UP) == HIGH){
       upButtonDown = false;
     }
 
