@@ -1,5 +1,8 @@
+
+
 #include "config.h"
 #include <Adafruit_NeoPixel.h>
+
 
 
 #define NUM_LEDS 60
@@ -15,6 +18,7 @@
 const int maxBrightness = 10; //this can be any number - it's the number of steps between dimmest and brightest.
 const int interval = 1;
 const boolean paris = true;
+const int ledsPerUnit = 1; // this is nromally 6. i am testing with 1 because my LED strip is shorter
 
 // variables will change:
 int brightness = 0;
@@ -25,9 +29,9 @@ int newValue = 10;
 bool upButtonDown = false;
 bool downButtonDown = false;
 
+int otherLight;
 int feed1Data;
 int feed2Data;
-int otherLight;
 bool feed3Data = false;
 bool feed4Data = true;
 int totalUnits;
@@ -83,6 +87,7 @@ void setup() {
 //commented out setup
 //  adafruitFeed4->save(feed4Data);
   adafruitFeed1->save(0);
+  Serial.println("adafruitFeed1: 0");
   // initialize the LED strip pin as an output:
   pinMode(LED_STRIP_PIN, OUTPUT);
   pinMode(SOLENOID_PIN, OUTPUT);
@@ -104,6 +109,7 @@ void loop() {
 
 //if this feed recieved a 1 from adafruit it will flicker the lights and trigger the solenoid
   if (feed3Data) {
+    
     if (brightness > 0) {
       digitalWrite(SOLENOID_PIN, HIGH);    //Switch Solenoid ON
       delay(50);                      //Wait 1 Second
@@ -114,8 +120,8 @@ void loop() {
       digitalWrite(SOLENOID_PIN, LOW);     //Switch Solenoid OFF
 
       for (int i = 0; i < maxBrightness; i++) {
-        for (int x = 0; x < 6; x++) {
-          strip.setPixelColor(i * 6 + x, strip.Color(255, 0, 0) );
+        for (int x = 0; x < ledsPerUnit; x++) {
+          strip.setPixelColor(i * ledsPerUnit + x, strip.Color(255, 0, 0) );
         }
       }
       strip.show();
@@ -123,8 +129,8 @@ void loop() {
       turnOn(brightness);
       delay(50);
       for (int i = 0; i < maxBrightness; i++) {
-        for (int x = 0; x < 6; x++) {
-          strip.setPixelColor(i * 6 + x, strip.Color(255, 0, 0) );
+        for (int x = 0; x < ledsPerUnit; x++) {
+          strip.setPixelColor(i * ledsPerUnit + x, strip.Color(255, 0, 0) );
         }
       }
       strip.show();
@@ -154,16 +160,26 @@ void loop() {
       otherLight = otherLight - interval;
       delay(80);
       adafruitFeed2->save(otherLight);
+      Serial.print("adafruitFeed2: ");
+      Serial.println(otherLight);
       
       //turn this lamps' brightness up
       brightness = brightness + interval;
       delay(80);
       adafruitFeed1->save(brightness);
+      Serial.print("adafruitFeed1: ");
+      Serial.println(brightness);
+
+      adafruitFeed3->save(1);
+      Serial.println("adafruitFeed3: 1");
+
     }
     else if(brightness < 10){
       brightness = brightness + interval;
       delay(80);
       adafruitFeed1->save(brightness);
+      Serial.print("adafruitFeed1: ");
+      Serial.println(brightness);
     }
     //this waits for the button to be released before the button press can be registered again
     upButtonDown = true;
@@ -174,6 +190,8 @@ void loop() {
     brightness = brightness - interval;
     delay(80);
     adafruitFeed1->save(brightness);
+    Serial.print("adafruitFeed1: ");
+    Serial.println(brightness);
     downButtonDown = true;
   }
 
@@ -183,6 +201,7 @@ void loop() {
 
     //set lights
     adafruitFeed3->save(1);
+    Serial.println("adafruitFeed3: 1");
 
     upButtonDown = true;
 
@@ -196,6 +215,12 @@ void loop() {
   if (digitalRead(BRIGHTNESS_UP) == HIGH) {
     upButtonDown = false;
   }
+
+
+  // ping the server to keep the mqtt connection alive
+//  if(! mqtt.ping()) {
+//    mqtt.disconnect();
+//  }
 
 }
 
@@ -217,8 +242,8 @@ void turnOn(int lights) {
   }
   //turing on lights to white
   for (int i = 0; i < lights; i++) {
-    for (int x = 0; x < 6; x++) {
-      strip.setPixelColor(i * 6 + x, strip.Color(255, 255, 255) );
+    for (int x = 0; x < ledsPerUnit; x++) {
+      strip.setPixelColor(i * ledsPerUnit + x, strip.Color(255, 255, 255) );
     }
   }
   strip.show();
